@@ -35,3 +35,15 @@ include_once plugin_dir_path(__FILE__) . 'includes/openai-gpt-functions.php';
 include_once plugin_dir_path(__FILE__) . 'includes/admin-menu.php';
 include_once plugin_dir_path(__FILE__) . 'includes/admin-styles.php';
 include_once plugin_dir_path(__FILE__) . 'includes/shortcode.php';
+
+function openai_gpt_enqueue_admin_styles()
+{
+  wp_enqueue_style('wp-admin');
+  wp_enqueue_style('admin-css', admin_url('css/admin.css'), array(), null);
+  wp_enqueue_style('list-tables');
+  wp_enqueue_style('dashboard');
+  wp_enqueue_style('dashicons');
+}
+
+
+add_action('admin_enqueue_scripts', 'openai_gpt_enqueue_admin_styles');

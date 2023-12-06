@@ -3,6 +3,18 @@ function openai_gpt_shortcode()
 {
   $api_key = get_option('openai_gpt_api_key');
 
+  $site_title = get_bloginfo('name');
+
+  $default_message = 'Welcome, I am the ' . $site_title . ' AI Bot. <br>I\'m here to assist you. <br>Please enter your question in the field below.';
+
+  $welcome_message = get_option('openai_gpt_welcome_message', $default_message);
+  if ($welcome_message === '') {
+    $formatted_message = $default_message;
+  } else {
+    $formatted_message = wpautop($welcome_message);
+  }
+
+
   ob_start(); // Start output buffering
 ?>
   <style>
@@ -33,11 +45,16 @@ function openai_gpt_shortcode()
       font-weight: bold;
     }
   </style>
+
+  <div id="openai-gpt-welcome">
+    <?php echo $formatted_message; ?>
+  </div>
+
   <div id="loading" style="display: none;">
     I am getting that answer for you. Please wait<span id="loadingDots"></span>
   </div>
 
-  <div id="openai-gpt-results" style="height: 450px; overflow-y: scroll;"></div>
+  <div id="openai-gpt-results" style="height: 10px; overflow-y: scroll; margin-bottom: 10px;"></div>
   <div id="openai-gpt-form">
     <input type="text" id="openai-gpt-question" placeholder="Ask a question" style="width: 80%;">
     <button id="openai-gpt-submit">Submit</button>
@@ -51,8 +68,10 @@ function openai_gpt_shortcode()
         var prompt = $('#openai-gpt-question').val();
         console.log("Prompt:", prompt);
         if (prompt) {
+          $('#openai-gpt-welcome').hide();
           $('#loading').show(); // Show the loading text
           var dotsAnimation = animateDots(); // Start the dots animation
+          $('#openai-gpt-results').css('height', '450px');
 
           $.post(ajaxurl, {
             action: 'openai_gpt_request',

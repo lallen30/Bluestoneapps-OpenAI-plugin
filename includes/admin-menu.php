@@ -24,8 +24,8 @@ function openai_gpt_admin_menu()
 
   add_submenu_page(
     'openai-gpt-training',
-    'Questions and Answers',
-    'Questions and Answers',
+    'History',
+    'History',
     'manage_options',
     'openai-gpt-qa',
     'openai_gpt_questions_answers_page'
@@ -34,8 +34,8 @@ function openai_gpt_admin_menu()
   // Submenu for OpenAI Key
   add_submenu_page(
     'openai-gpt-training',
-    'OpenAI Key',
-    'OpenAI Key',
+    'Settings',
+    'Settings',
     'manage_options',
     'openai-gpt-settings',
     'openai_gpt_settings_page'
@@ -48,9 +48,17 @@ add_action('admin_menu', 'openai_gpt_admin_menu');
 
 function openai_gpt_settings_page()
 {
+  // Retrieve the stored welcome message
+  $welcome_message = get_option('openai_gpt_welcome_message', '');
+
 ?>
   <div class="wrap">
-    <h1>BluestoneApp OpenAI Settings</h1>
+    <h1>BluestoneApps OpenAI Settings</h1>
+    <style>
+      .openai-gpt-input {
+        width: 75%;
+      }
+    </style>
     <form method="post" action="options.php">
       <?php
       settings_fields('openai-gpt-settings-group');
@@ -59,7 +67,20 @@ function openai_gpt_settings_page()
       <table class="form-table">
         <tr valign="top">
           <th scope="row">OpenAI API Key</th>
-          <td><input type="text" name="openai_gpt_api_key" value="<?php echo esc_attr(get_option('openai_gpt_api_key')); ?>" /></td>
+          <td><input type="text" name="openai_gpt_api_key" value="<?php echo esc_attr(get_option('openai_gpt_api_key')); ?>" class="openai-gpt-input" /></td>
+        </tr>
+        <tr valign="top">
+          <th scope="row">Welcome Message</th>
+          <td>
+            <?php
+            // Settings for the wp_editor
+            $editor_settings = array(
+              'textarea_name' => 'openai_gpt_welcome_message',
+              'textarea_rows' => 10
+            );
+            wp_editor(html_entity_decode($welcome_message), 'openai_gpt_welcome_message_editor', $editor_settings);
+            ?>
+          </td>
         </tr>
       </table>
       <?php submit_button(); ?>
@@ -72,6 +93,7 @@ function openai_gpt_settings_page()
   </div>
 <?php
 }
+
 
 function openai_gpt_training_page()
 {
@@ -105,10 +127,10 @@ function openai_gpt_training_page()
             wp_editor(html_entity_decode($stored_instructions), 'high_level_instructions', $editor_settings);
             ?>
           </td>
-        <tr valign="top">
+          <!-- <tr valign="top">
           <th scope="row">Data File</th>
           <td><input type="file" name="training_data_file" /></td>
-        </tr>
+        </tr> -->
       </table>
       <?php submit_button('Save'); ?>
     </form>
@@ -119,5 +141,6 @@ function openai_gpt_training_page()
 function openai_gpt_register_settings()
 {
   register_setting('openai-gpt-settings-group', 'openai_gpt_api_key');
+  register_setting('openai-gpt-settings-group', 'openai_gpt_welcome_message'); // Register new setting
 }
 add_action('admin_init', 'openai_gpt_register_settings');
