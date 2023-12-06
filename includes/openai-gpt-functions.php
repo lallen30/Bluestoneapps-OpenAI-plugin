@@ -14,8 +14,8 @@ function openai_gpt_generate_text($prompt)
       ['role' => 'system', 'content' => $stored_instructions],
       ['role' => 'user', 'content' => $prompt]
     ],
-    'max_tokens' => 250,
-    'temperature' => 0.7
+    'max_tokens' => 500,
+    'temperature' => 0.5
   ];
 
   $args = [

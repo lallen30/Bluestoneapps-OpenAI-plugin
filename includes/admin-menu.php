@@ -1,27 +1,50 @@
 <?php
 function openai_gpt_admin_menu()
 {
+  // Main menu item - points to Training Data page
   add_menu_page(
-    'BluestoneApps OpenAI Settings',
-    'BluestoneApps OpenAI',
-    'manage_options',
-    'openai-gpt-settings',
-    'openai_gpt_settings_page',
-    'dashicons-admin-generic',
-    81
+    'BluestoneApps OpenAI', // Page title
+    'BluestoneApps AI',     // Menu title
+    'manage_options',       // Capability
+    'openai-gpt-training',  // Menu slug (same as the first submenu)
+    'openai_gpt_training_page', // Function for Training Data page
+    'dashicons-admin-generic', // Icon
+    81                       // Position
   );
 
-  // Add submenu for Training Data
+  // Submenu for Training Data (this will be the default page for the main menu)
   add_submenu_page(
+    'openai-gpt-training',
+    'Training Data',
+    'Training Data',
+    'manage_options',
+    'openai-gpt-training',
+    'openai_gpt_training_page'
+  );
+
+  add_submenu_page(
+    'openai-gpt-training',
+    'Questions and Answers',
+    'Questions and Answers',
+    'manage_options',
+    'openai-gpt-qa',
+    'openai_gpt_questions_answers_page'
+  );
+
+  // Submenu for OpenAI Key
+  add_submenu_page(
+    'openai-gpt-training',
+    'OpenAI Key',
+    'OpenAI Key',
+    'manage_options',
     'openai-gpt-settings',
-    'Training Data', // Page title
-    'Training Data', // Menu title
-    'manage_options', // Capability
-    'openai-gpt-training', // Menu slug
-    'openai_gpt_training_page' // Function to display the page
+    'openai_gpt_settings_page'
   );
 }
 add_action('admin_menu', 'openai_gpt_admin_menu');
+
+
+
 
 function openai_gpt_settings_page()
 {
@@ -87,7 +110,7 @@ function openai_gpt_training_page()
           <td><input type="file" name="training_data_file" /></td>
         </tr>
       </table>
-      <?php submit_button('Upload Data'); ?>
+      <?php submit_button('Save'); ?>
     </form>
   </div>
 <?php
