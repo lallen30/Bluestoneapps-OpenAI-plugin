@@ -6,6 +6,15 @@ Version: 1.0
 Author: Your Name
 */
 
+add_action('init', 'start_session', 1);
+
+function start_session()
+{
+  if (!session_id()) {
+    session_start();
+  }
+}
+
 function openai_gpt_activate()
 {
   openai_gpt_create_table();

@@ -4,24 +4,34 @@ function openai_gpt_questions_answers_page()
   global $wpdb;
   $table_name = $wpdb->prefix . 'openai_gpt_responses';
 
-  $sort_field = isset($_GET['sort']) ? $_GET['sort'] : 'user_id';
-  $current_order = isset($_GET['order']) && $_GET['order'] == 'ASC' ? 'DESC' : 'ASC';
+  // Set default sorting field to 'time' and order to 'DESC'
+  $sort_field = isset($_GET['sort']) ? $_GET['sort'] : 'time';
+  $current_order = isset($_GET['order']) && $_GET['order'] == 'ASC' ? 'ASC' : 'DESC';
 
-  $sort_icon = $current_order === 'ASC' ? 'dashicons-arrow-down-alt2' : 'dashicons-arrow-up-alt2';
+  // Determine the sort icon for each column
+  $sort_icon = $current_order === 'ASC' ? 'dashicons-arrow-up-alt2' : 'dashicons-arrow-down-alt2';
+
+  echo '<style>
+        .dashicons-arrow-up-alt2:before {
+            content: "\f142";
+        }
+        .dashicons-arrow-down-alt2:before {
+            content: "\f140";
+        }
+    </style>';
 
   $items_per_page = 50;
   $current_page = isset($_GET['paged']) ? max(1, intval($_GET['paged'])) : 1;
   $offset = ($current_page - 1) * $items_per_page;
 
-  $username_link = '?page=openai-gpt-qa&sort=user_id&order=' . $current_order;
-  $question_link = '?page=openai-gpt-qa&sort=question&order=' . $current_order;
-  $response_link = '?page=openai-gpt-qa&sort=response&order=' . $current_order;
-  $timestamp_link = '?page=openai-gpt-qa&sort=time&order=' . $current_order;
+  // Update links for sorting
+  $username_link = '?page=openai-gpt-qa&sort=user_id&order=' . ($sort_field === 'user_id' ? ($current_order === 'ASC' ? 'DESC' : 'ASC') : 'ASC');
+  $question_link = '?page=openai-gpt-qa&sort=question&order=' . ($sort_field === 'question' ? ($current_order === 'ASC' ? 'DESC' : 'ASC') : 'ASC');
+  $response_link = '?page=openai-gpt-qa&sort=response&order=' . ($sort_field === 'response' ? ($current_order === 'ASC' ? 'DESC' : 'ASC') : 'ASC');
+  $timestamp_link = '?page=openai-gpt-qa&sort=time&order=' . ($sort_field === 'time' ? ($current_order === 'ASC' ? 'DESC' : 'ASC') : 'ASC');
 
   // Query modification based on sort parameters
-  $sort_order = isset($_GET['order']) ? $_GET['order'] : 'ASC';
-  // $results = $wpdb->get_results("SELECT * FROM $table_name ORDER BY $sort_field $sort_order");
-
+  $sort_order = isset($_GET['order']) ? $_GET['order'] : 'DESC';
   $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_name ORDER BY $sort_field $sort_order LIMIT %d OFFSET %d", $items_per_page, $offset));
 
   $total_items = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
@@ -43,8 +53,6 @@ function openai_gpt_questions_answers_page()
 
   echo '</div></div>';
 
-
-  echo '<style>.heading-item { display:flex;} .username-heading span.sorting-indicator{visibility:visible;}</style>';
   echo '<div class="wrap">';
   echo '<h1>Questions and Answers History</h1>';
   echo '<table class="widefat fixed" cellspacing="0">';
