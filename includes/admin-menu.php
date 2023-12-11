@@ -136,7 +136,7 @@ function openai_gpt_training_page()
                 'toolbar1' => 'link,unlink,bullist,numlist,pastetext,undo,redo', // Specify the buttons you want on the first toolbar
                 'toolbar2' => '', // Clear the second toolbar
               ),
-              'quicktags'     => false // Disable quicktags
+              'quicktags'     => true // Disable quicktags
             );
             wp_editor(html_entity_decode($stored_instructions), 'high_level_instructions', $editor_settings);
             ?>
