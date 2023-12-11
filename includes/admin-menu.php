@@ -130,7 +130,13 @@ function openai_gpt_training_page()
             <?php
             $editor_settings = array(
               'textarea_name' => 'high_level_instructions',
-              'textarea_rows' => 10
+              'textarea_rows' => 14,
+              'media_buttons' => false, // Disable media buttons
+              'tinymce'       => array(
+                'toolbar1' => 'link,unlink,bullist,numlist,pastetext,undo,redo', // Specify the buttons you want on the first toolbar
+                'toolbar2' => '', // Clear the second toolbar
+              ),
+              'quicktags'     => false // Disable quicktags
             );
             wp_editor(html_entity_decode($stored_instructions), 'high_level_instructions', $editor_settings);
             ?>
