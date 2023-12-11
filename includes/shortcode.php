@@ -115,7 +115,16 @@ function openai_gpt_ajax_request()
   $table_name = $wpdb->prefix . 'openai_gpt_responses';
 
   $prompt = sanitize_text_field($_POST['prompt']);
-  $response = openai_gpt_generate_text($prompt);
+
+  $file_path = get_option('openai_gpt_knowledge_file_path', '');
+
+  $knowledge_data = '';
+  if (!empty($file_path)) {
+    $knowledge_data = openai_gpt_process_file_for_knowledge_retrieval($file_path);
+  }
+
+  $response = openai_gpt_generate_text($prompt, $knowledge_data);
+
   $user_id = get_current_user_id() ?: 0;
 
   if (!empty($response['choices'][0]['message']['content'])) {

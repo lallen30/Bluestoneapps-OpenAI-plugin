@@ -1,5 +1,5 @@
 <?php
-function openai_gpt_generate_text($prompt)
+function openai_gpt_generate_text($prompt, $knowledge_data)
 {
   // Retrieve your existing API key and instructions
   $api_key = trim(get_option('openai_gpt_api_key'));
@@ -24,7 +24,8 @@ function openai_gpt_generate_text($prompt)
       ['role' => 'user', 'content' => $full_prompt]
     ],
     'max_tokens' => 500,
-    'temperature' => 0.5
+    'temperature' => 0.5,
+    'knowledge' => $knowledge_data
   ];
 
   // Debug: Check Data Being Sent
@@ -66,4 +67,45 @@ function openai_gpt_generate_text($prompt)
 
   // Return the response
   return $response_data;
+}
+
+function openai_gpt_handle_file_upload()
+{
+  if (isset($_FILES['knowledge_file']) && $_FILES['knowledge_file']['error'] == UPLOAD_ERR_OK) {
+    $file_path = $_FILES['knowledge_file']['tmp_name'];
+
+    // Process the file
+    $knowledge_data = openai_gpt_process_file_for_knowledge_retrieval($file_path);
+
+    if ($knowledge_data !== false) {
+      // Use this data in your OpenAI API requests
+      // For example, store it in a session or a WordPress option
+      update_option('openai_gpt_knowledge_data', $knowledge_data);
+    }
+  }
+}
+
+
+
+function openai_gpt_process_file_for_knowledge_retrieval($file_path)
+{
+  // Check if the file exists
+  if (!file_exists($file_path)) {
+    error_log("File not found: " . $file_path);
+    return false;
+  }
+
+  // Read the file contents
+  $file_contents = file_get_contents($file_path);
+  if ($file_contents === false) {
+    error_log("Failed to read file: " . $file_path);
+    return false;
+  }
+
+  // Process the file contents as needed for Knowledge Retrieval
+  // This depends on the format of your file and how you want to use it with the OpenAI API
+  // For example, if it's a text file with instructions or data, you might just pass it as is
+
+  // Return the processed data
+  return $file_contents;
 }

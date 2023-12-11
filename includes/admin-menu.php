@@ -97,21 +97,36 @@ function openai_gpt_settings_page()
 
 function openai_gpt_training_page()
 {
+  openai_gpt_handle_file_upload();
   // Check if the form has been submitted
-  if (isset($_POST['high_level_instructions'])) {
-    // Sanitize and save the data
-    update_option('openai_gpt_high_level_instructions', sanitize_textarea_field($_POST['high_level_instructions']));
+  if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['high_level_instructions'])) {
+      // Sanitize and save the high-level instructions
+      update_option('openai_gpt_high_level_instructions', sanitize_textarea_field($_POST['high_level_instructions']));
+    }
+
+    if (isset($_FILES['knowledge_file']) && $_FILES['knowledge_file']['error'] == UPLOAD_ERR_OK) {
+      // Handle the uploaded file
+      // You might want to save it to the server or process it directly
+      $file_path = $_FILES['knowledge_file']['tmp_name'];
+
+      // Process the file for Knowledge Retrieval
+      // This is where you integrate with the OpenAI API
+      // You'll need to read the file and format the data as needed
+      // For example, save the file path in an option or process and store the file content
+      update_option('openai_gpt_knowledge_file_path', $file_path);
+    }
   }
 
-  // Retrieve the stored instructions
+  // Retrieve the stored instructions and file path
   $stored_instructions = get_option('openai_gpt_high_level_instructions', '');
   $stored_instructions = stripslashes($stored_instructions);
-
+  $knowledge_file_path = get_option('openai_gpt_knowledge_file_path', '');
 
 ?>
   <div class="wrap">
     <h1>Training Data for OpenAI</h1>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
       <table class="form-table">
         <tr valign="top">
           <th scope="row">High-level System Instructions</th>
@@ -127,16 +142,24 @@ function openai_gpt_training_page()
             wp_editor(html_entity_decode($stored_instructions), 'high_level_instructions', $editor_settings);
             ?>
           </td>
-          <!-- <tr valign="top">
-          <th scope="row">Data File</th>
-          <td><input type="file" name="training_data_file" /></td>
-        </tr> -->
+        </tr>
+        <tr valign="top">
+          <th scope="row">Upload Knowledge File</th>
+          <td><input type="file" name="knowledge_file" /></td>
+        </tr>
+        <?php if ($knowledge_file_path) : ?>
+          <tr valign="top">
+            <th scope="row">Uploaded File</th>
+            <td><?php echo esc_html($knowledge_file_path); ?></td>
+          </tr>
+        <?php endif; ?>
       </table>
       <?php submit_button('Save'); ?>
     </form>
   </div>
 <?php
 }
+
 
 function openai_gpt_register_settings()
 {
