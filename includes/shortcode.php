@@ -120,7 +120,7 @@ function openai_gpt_ajax_request()
 
   $knowledge_data = '';
   if (!empty($file_path)) {
-    $knowledge_data = openai_gpt_process_file_for_knowledge_retrieval($file_path);
+    $knowledge_data = openai_gpt_handle_file_upload($file_path);
   }
 
   $response = openai_gpt_generate_text($prompt, $knowledge_data);

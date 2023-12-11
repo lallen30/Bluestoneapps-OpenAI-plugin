@@ -135,7 +135,7 @@ function openai_gpt_training_page()
           </td>
         </tr>
         <tr valign="top">
-          <th scope="row">Upload Knowledge Files</th>
+          <th scope="row">Documents (optional)</th>
           <td><input type="file" name="knowledge_files[]" multiple /></td>
         </tr>
         <!-- Optionally display uploaded file paths -->
