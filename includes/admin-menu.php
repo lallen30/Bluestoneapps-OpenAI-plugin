@@ -97,7 +97,7 @@ function openai_gpt_settings_page()
 
 function openai_gpt_training_page()
 {
-  openai_gpt_handle_file_upload(); // This will handle the file upload
+  openai_gpt_handle_file_upload(); // Handle file upload
 
   // Check if the form has been submitted
   if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -105,58 +105,58 @@ function openai_gpt_training_page()
       // Sanitize and save the high-level instructions
       update_option('openai_gpt_high_level_instructions', sanitize_textarea_field($_POST['high_level_instructions']));
     }
+
+    if (isset($_POST['custom_urls'])) {
+      // Sanitize and save the custom URLs
+      update_option('openai_gpt_custom_urls', sanitize_textarea_field($_POST['custom_urls']));
+    }
   }
 
-  // Retrieve the stored instructions
+  // Retrieve the stored instructions and custom URLs
   $stored_instructions = get_option('openai_gpt_high_level_instructions', '');
   $stored_instructions = stripslashes($stored_instructions);
-
-  // Retrieve the stored file paths (if needed for display or other purposes)
-  $knowledge_file_paths = get_option('openai_gpt_knowledge_file_paths', []);
+  $custom_urls = get_option('openai_gpt_custom_urls', '');
+  $custom_urls = stripslashes($custom_urls);
 
 ?>
   <div class="wrap">
     <h1>Training Data for OpenAI</h1>
     <form method="post" enctype="multipart/form-data">
       <table class="form-table">
+        <!-- High-level System Instructions -->
         <tr valign="top">
           <th scope="row">High-level System Instructions</th>
           <td>
             <?php
-            // Settings array for wp_editor
             $editor_settings = array(
               'textarea_name' => 'high_level_instructions',
-              'textarea_rows' => 20
+              'textarea_rows' => 10
             );
-
-            // Replace the existing wp_editor call with this one
             wp_editor(html_entity_decode($stored_instructions), 'high_level_instructions', $editor_settings);
             ?>
           </td>
         </tr>
+
+        <!-- Custom URLs -->
         <tr valign="top">
-          <th scope="row">Documents (optional)</th>
+          <th scope="row">Enter Custom URLs <br><small>(Only one URL per line)</small></th>
+          <td>
+            <textarea name="custom_urls" rows="5" cols="50"><?php echo esc_textarea($custom_urls); ?></textarea>
+          </td>
+        </tr>
+
+        <!-- File Upload Section -->
+        <tr valign="top">
+          <th scope="row">Upload Knowledge Files</th>
           <td><input type="file" name="knowledge_files[]" multiple /></td>
         </tr>
-        <!-- Optionally display uploaded file paths -->
-        <?php if (!empty($knowledge_file_paths)) : ?>
-          <tr valign="top">
-            <th scope="row">Uploaded Files</th>
-            <td>
-              <ul>
-                <?php foreach ($knowledge_file_paths as $file_path) : ?>
-                  <li><?php echo esc_html($file_path); ?></li>
-                <?php endforeach; ?>
-              </ul>
-            </td>
-          </tr>
-        <?php endif; ?>
       </table>
       <?php submit_button('Save'); ?>
     </form>
   </div>
 <?php
 }
+
 
 
 

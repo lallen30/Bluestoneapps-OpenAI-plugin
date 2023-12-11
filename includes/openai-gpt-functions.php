@@ -4,7 +4,13 @@ function openai_gpt_generate_text($prompt, $knowledge_data)
   // Retrieve your existing API key and instructions
   $api_key = trim(get_option('openai_gpt_api_key'));
   $stored_instructions = get_option('openai_gpt_high_level_instructions', '');
+  $custom_urls = get_option('custom_urls', ''); // Ensure this key matches the one used in update_option
+  $custom_urls = 'Use only the information from ' . stripslashes($custom_urls) . ' to formulate your responses.';
   $stored_instructions = stripslashes($stored_instructions);
+
+  $knowledge_data = get_option('openai_gpt_knowledge_data', '');
+
+  $system_message_content = $stored_instructions . "\n" . $custom_urls . "\n\n" . $knowledge_data;
 
   // Debug: Check API Key and Instructions
   error_log('API Key: ' . $api_key);
@@ -20,12 +26,11 @@ function openai_gpt_generate_text($prompt, $knowledge_data)
   $data = [
     'model' => 'gpt-3.5-turbo',
     'messages' => [
-      ['role' => 'system', 'content' => $stored_instructions],
+      ['role' => 'system', 'content' => $system_message_content],
       ['role' => 'user', 'content' => $full_prompt]
     ],
     'max_tokens' => 500,
-    'temperature' => 0.5,
-    'knowledge' => $knowledge_data // Include the knowledge data
+    'temperature' => 0.5
   ];
 
   // Debug: Check Data Being Sent
@@ -67,6 +72,7 @@ function openai_gpt_generate_text($prompt, $knowledge_data)
   // Return the response
   return $response_data;
 }
+
 
 
 function openai_gpt_handle_file_upload()
