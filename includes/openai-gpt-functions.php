@@ -71,19 +71,26 @@ function openai_gpt_generate_text($prompt, $knowledge_data)
 
 function openai_gpt_handle_file_upload()
 {
-  if (isset($_FILES['knowledge_file']) && $_FILES['knowledge_file']['error'] == UPLOAD_ERR_OK) {
-    $file_path = $_FILES['knowledge_file']['tmp_name'];
+  if (isset($_FILES['knowledge_files'])) {
+    $knowledge_data_combined = '';
 
-    // Process the file
-    $knowledge_data = openai_gpt_process_file_for_knowledge_retrieval($file_path);
+    foreach ($_FILES['knowledge_files']['tmp_name'] as $index => $tmpName) {
+      if ($_FILES['knowledge_files']['error'][$index] == UPLOAD_ERR_OK) {
+        $file_contents = file_get_contents($tmpName);
+        if ($file_contents !== false) {
+          // Combine the contents of each file
+          $knowledge_data_combined .= $file_contents . "\n\n";
+        }
+      }
+    }
 
-    if ($knowledge_data !== false) {
-      // Use this data in your OpenAI API requests
-      // For example, store it in a session or a WordPress option
-      update_option('openai_gpt_knowledge_data', $knowledge_data);
+    if (!empty($knowledge_data_combined)) {
+      // Store the combined data in a WordPress option
+      update_option('openai_gpt_knowledge_data', $knowledge_data_combined);
     }
   }
 }
+
 
 
 

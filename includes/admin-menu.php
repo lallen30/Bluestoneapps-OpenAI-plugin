@@ -97,31 +97,22 @@ function openai_gpt_settings_page()
 
 function openai_gpt_training_page()
 {
-  openai_gpt_handle_file_upload();
+  openai_gpt_handle_file_upload(); // This will handle the file upload
+
   // Check if the form has been submitted
   if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['high_level_instructions'])) {
       // Sanitize and save the high-level instructions
       update_option('openai_gpt_high_level_instructions', sanitize_textarea_field($_POST['high_level_instructions']));
     }
-
-    if (isset($_FILES['knowledge_file']) && $_FILES['knowledge_file']['error'] == UPLOAD_ERR_OK) {
-      // Handle the uploaded file
-      // You might want to save it to the server or process it directly
-      $file_path = $_FILES['knowledge_file']['tmp_name'];
-
-      // Process the file for Knowledge Retrieval
-      // This is where you integrate with the OpenAI API
-      // You'll need to read the file and format the data as needed
-      // For example, save the file path in an option or process and store the file content
-      update_option('openai_gpt_knowledge_file_path', $file_path);
-    }
   }
 
-  // Retrieve the stored instructions and file path
+  // Retrieve the stored instructions
   $stored_instructions = get_option('openai_gpt_high_level_instructions', '');
   $stored_instructions = stripslashes($stored_instructions);
-  $knowledge_file_path = get_option('openai_gpt_knowledge_file_path', '');
+
+  // Retrieve the stored file paths (if needed for display or other purposes)
+  $knowledge_file_paths = get_option('openai_gpt_knowledge_file_paths', []);
 
 ?>
   <div class="wrap">
@@ -144,13 +135,20 @@ function openai_gpt_training_page()
           </td>
         </tr>
         <tr valign="top">
-          <th scope="row">Upload Knowledge File</th>
-          <td><input type="file" name="knowledge_file" /></td>
+          <th scope="row">Upload Knowledge Files</th>
+          <td><input type="file" name="knowledge_files[]" multiple /></td>
         </tr>
-        <?php if ($knowledge_file_path) : ?>
+        <!-- Optionally display uploaded file paths -->
+        <?php if (!empty($knowledge_file_paths)) : ?>
           <tr valign="top">
-            <th scope="row">Uploaded File</th>
-            <td><?php echo esc_html($knowledge_file_path); ?></td>
+            <th scope="row">Uploaded Files</th>
+            <td>
+              <ul>
+                <?php foreach ($knowledge_file_paths as $file_path) : ?>
+                  <li><?php echo esc_html($file_path); ?></li>
+                <?php endforeach; ?>
+              </ul>
+            </td>
           </tr>
         <?php endif; ?>
       </table>
@@ -159,6 +157,7 @@ function openai_gpt_training_page()
   </div>
 <?php
 }
+
 
 
 function openai_gpt_register_settings()
