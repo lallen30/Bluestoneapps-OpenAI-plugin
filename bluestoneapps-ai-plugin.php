@@ -3,7 +3,7 @@
 Plugin Name: BluestoneApps AI Plugin
 Description: A simple plugin to integrate OpenAI GPT API with WordPress.
 Version: 1.0
-Author: Your Name
+Author: Larry Allen
 */
 
 add_action('init', 'start_session', 1);
